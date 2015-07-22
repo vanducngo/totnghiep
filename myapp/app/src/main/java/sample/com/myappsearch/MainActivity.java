@@ -1,5 +1,8 @@
 package sample.com.myappsearch;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,10 +11,23 @@ import android.view.MenuItem;
 
 public class MainActivity extends ActionBarActivity {
 
+    public long getSelectedProductID() {
+        return selectedProductID;
+    }
+
+    private long selectedProductID;
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    private String imageUrl;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        addFragment(new MainActivityFragment());
     }
 
 
@@ -35,5 +51,30 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    public void replaceFragment(Fragment sFragment, long dataModel,String imageUrl) {
+        selectedProductID  = dataModel;
+        this.imageUrl = imageUrl;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.addToBackStack(null);
+
+        //Replace current fragment by sFragment with custom animation.
+        transaction
+                .setCustomAnimations(R.anim.move_right_in,
+                        R.anim.move_left_out, R.anim.move_right_out,
+                        R.anim.move_left_in)
+                .replace(R.id.main_fragment_container, sFragment).commit();
+    }
+
+    public void addFragment(Fragment sFragment) {
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.addToBackStack(null);
+        transaction
+                .add(R.id.main_fragment_container, sFragment).commit();
     }
 }

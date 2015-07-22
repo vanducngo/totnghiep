@@ -113,7 +113,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 //        Cursor cursor = database.query(TABLE_BRAND,
 //                allColumns, null, null, null, null, null);
-        String query = "SELECT a.Name, i.Url FROM AliasProduct as a join Product as p on a.ProductId = p.Id join Image as i on a.ProductId = i.Id join Brand as b on p.BrandId = b.Id where a.IsMain = 'True' and p.IsActive = 'True' and a.Name like '%"+ product+"%'";
+        String query = "SELECT a.Name, i.Url, p.Id FROM AliasProduct as a join Product as p on a.ProductId = p.Id join Image as i on a.ProductId = i.Id join Brand as b on p.BrandId = b.Id where a.IsMain = 'True' and p.IsActive = 'True' and a.Name like '%"+ product+"%'";
         Cursor cursor = database.rawQuery(query,null);
 
         cursor.moveToFirst();
@@ -128,10 +128,51 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return rListModel;
     }
 
+
+    public ArrayList<String> getComments(long id) {
+        ArrayList<String> rListModel = new ArrayList<String>();
+
+        SQLiteDatabase database = this.getReadableDatabase();
+
+//        Cursor cursor = database.query(TABLE_BRAND,
+//                allColumns, null, null, null, null, null);
+        String query = "SELECT Content FROM Comment where ProductId = " + id;
+        Cursor cursor = database.rawQuery(query,null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            String tVocabulary = cursor.getString(0);
+            rListModel.add(tVocabulary);
+            cursor.moveToNext();
+        }
+        // make sure to close the cursor
+        cursor.close();
+        database.close();
+        return rListModel;
+    }
+
+    public String getDescription(long id) {
+
+        SQLiteDatabase database = this.getReadableDatabase();
+
+//        Cursor cursor = database.query(TABLE_BRAND,
+//                allColumns, null, null, null, null, null);
+        String query = "SELECT Description FROM Product where Id = " + id;
+        Cursor cursor = database.rawQuery(query, null);
+
+        cursor.moveToFirst();
+        String tVocabulary = cursor.getString(0);
+        // make sure to close the cursor
+        cursor.close();
+        database.close();
+        return tVocabulary;
+    }
+
     private DataModel cursorToModel(Cursor cursor) {
         DataModel rVocabulary = new DataModel();
         rVocabulary.setName(cursor.getString(0));
         rVocabulary.setImageUrl(cursor.getString(1));
+        rVocabulary.setId(cursor.getLong(2));
         return rVocabulary;
     }
 }
